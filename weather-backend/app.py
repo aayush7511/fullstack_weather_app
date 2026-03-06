@@ -11,6 +11,7 @@ CORS(app)
 def weather():
     city = request.args.get("city")
 
+    # make sure city is inputted
     if not city or not city.strip():
         return jsonify({"error": "City is required"}), 400
 
@@ -33,7 +34,8 @@ def weather():
         weather_url = (
             f"https://api.open-meteo.com/v1/forecast?"
             f"latitude={latitude}&longitude={longitude}"
-            "&current_weather=true"
+            f"&current=temperature_2m,precipitation,relative_humidity_2m,"
+            "wind_speed_10m,wind_gusts_10m,pressure_msl,cloud_cover"
         )
 
         weather_response = requests.get(weather_url, timeout=10)
@@ -41,18 +43,24 @@ def weather():
         weather_data = weather_response.json()
 
         if "error" in weather_data:
-            return jsonify({"error": weather_data.get("reason", "Weather API error")}), 502
-
-        current = weather_data.get("current_weather")
+            return jsonify({"error": weather_data.get("reason", "Weather API error")}), 502 
+        
+        current = weather_data['current']
         if not current:
             return jsonify({"error": "Weather data unavailable"}), 502
 
+        print(current)
         return jsonify({
-            "temperature": current["temperature"],
-            "wind_speed": current["windspeed"],
+            "temperature": current['temperature_2m'],
+            "wind_speed": current['wind_speed_10m'],
+            "precipitation": current['precipitation'],
+            "relative_humidity": current['relative_humidity_2m'],
+            "wind_gusts": current['wind_gusts_10m'],
+            "pressure_msl": current['pressure_msl'],
+            "cloud_cover": current['cloud_cover']
         })
     except requests.RequestException as e:
-        return jsonify({"error": "Weather service unavailable"}), 502
+        return jsonify({{"error": "Weather service unavailable"}}), 502
     except (KeyError, IndexError, TypeError):
         return jsonify({"error": "City not found"}), 404
 

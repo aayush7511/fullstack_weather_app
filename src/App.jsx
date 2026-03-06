@@ -57,6 +57,12 @@ function App() {
           <p>Temperature: {weather.temperature}°C</p>
           <p>Temperature: {Math.round(weather.temperature * 1.8 + 32)}°F</p>
           <p>Wind Speed: {weather.wind_speed} km/h</p>
+          <p>Precipitation: {weather.precipitation} inches</p>
+          <p>Relative Humidity: {weather.relative_humidity} %</p>
+          <p>Wind Gusts: {weather.wind_gusts} knots</p>
+          <p>Pressure MSL: {weather.pressure_msl} hPa</p>
+          <p>Cloud Cover: {weather.cloud_cover} %</p>
+
         </div>
       )}
     </div>
